@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -34,7 +34,6 @@ app.use(express.json());
 app.post("/api/saveFileData", async (req, res) => {
   const { fileName, fileUrl, snapshotUrl, password } = req.body;
 
-  // Validate required fields
   if (!fileName || !fileUrl || !password) {
     return res.status(400).json({ message: "Missing required fields." });
   }
@@ -42,8 +41,7 @@ app.post("/api/saveFileData", async (req, res) => {
   try {
     const fileData = new FileData({ fileName, fileUrl, snapshotUrl, password });
     const savedFile = await fileData.save();
-
-    console.log("File data saved:", savedFile); // Log to check the saved file
+    console.log("File data saved:", savedFile);
 
     res.status(201).json({
       message: "File data saved successfully.",
@@ -62,7 +60,7 @@ app.post("/api/saveFileData", async (req, res) => {
 app.get("/api/getAllFiles", async (req, res) => {
   try {
     const allFiles = await FileData.find();
-    console.log("Fetched files:", allFiles); // Log fetched files
+    console.log("Fetched files:", allFiles);
 
     if (!allFiles || allFiles.length === 0) {
       return res.status(404).json({ message: "No files found." });
@@ -70,7 +68,7 @@ app.get("/api/getAllFiles", async (req, res) => {
 
     res.status(200).json({
       message: "Files fetched successfully.",
-      data: allFiles, // Return the array of files
+      data: allFiles,
     });
   } catch (error) {
     console.error("Error fetching files:", error);
@@ -81,18 +79,16 @@ app.get("/api/getAllFiles", async (req, res) => {
   }
 });
 
+// POST endpoint to delete all files
 app.post("/api/deleteAllFiles", async (req, res) => {
   const { password } = req.body;
 
-  // Check if the provided password is correct
   if (password !== "Saijam*98") {
     return res.status(403).json({ message: "Incorrect password." });
   }
 
   try {
-    // Delete all files from the database
     const deletedFiles = await FileData.deleteMany();
-
     if (deletedFiles.deletedCount === 0) {
       return res.status(404).json({ message: "No files to delete." });
     }
@@ -109,7 +105,7 @@ app.post("/api/deleteAllFiles", async (req, res) => {
   }
 });
 
-// GET endpoint to fetch a single file by ID (optional feature)
+// GET endpoint to fetch a single file by ID
 app.get("/api/getFile/:id", async (req, res) => {
   const { id } = req.params;
 
